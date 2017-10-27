@@ -244,18 +244,18 @@ export default {
     },
     parse (str) {
       if (str === undefined || str === null) { str = this.val }
-	  /*if(str !=== undefined)
+	    /*if(str !=== undefined)
       {
         let date = str.length === 10 && (this.format === 'dd-MM-yyyy' || this.format === 'dd/MM/yyyy' || this.format === 'dd.MM.yyyy') ?
         new Date(str.substring(6, 10), str.substring(3, 5)-1, str.substring(0, 2)) :
         new Date(str)
         return isNaN(date.getFullYear()) ? new Date() : date
       }*/
-    if(str !=== "")
-	    var d = moment(str, this.format);
-    else
-      var d = moment();
-	  return d.toDate();
+      if(str !== "")
+        var d = moment(str, this.format);
+      else
+        var d = moment();
+      return d.toDate();
     },
     getDayCount (year, month) {
       const dict = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
