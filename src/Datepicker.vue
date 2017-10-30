@@ -1,5 +1,5 @@
 <template>
-  <div class="datepicker">
+  <div class="datepicker btn-group btn-group-justified">
     <input class="form-control datepicker-input" type="text"
       v-model="val"
       :class="{'with-reset-button': clearButton}"
@@ -251,7 +251,7 @@ export default {
         new Date(str)
         return isNaN(date.getFullYear()) ? new Date() : date
       }*/
-      if(str !== "")
+      if(str !== undefined && str !== "")
         var d = moment(str, this.format);
       else
         var d = moment();
