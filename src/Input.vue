@@ -83,9 +83,9 @@ export default {
     mask: null,
     maskDelay: {type: Number, default: 100},
     match: {type: String, default: null},
-    max: {type: String, default: null},
+    max: {type: Number, default: null},
     maxlength: {type: Number, default: null},
-    min: {type: String, default: null},
+    min: {type: Number, default: null},
     minlength: {type: Number, default: 0},
     name: {type: String, default: null},
     pattern: {default: null},
@@ -206,7 +206,16 @@ export default {
     },
     validate () {
       if (!this.canValidate) { return true }
-      let value = (this.val || '').trim()
+      let value  = "";
+      if(!isNaN(this.val))
+      {
+        if(this.min !== null && this.val < this.min) return false;
+        if(this.max !== null && this.val > this.max) return false;
+        return true;
+      }
+      else {
+        value = (this.val || '').trim();
+      }
       if (!value) { return !this.required }
       if (this.match !== null) { return this.match === value }
       if (value.length < this.minlength) { return false }

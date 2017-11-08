@@ -24,7 +24,7 @@
           <span v-show="searchValue" class="close" @click="clearSearch">&times;</span>
         </li>
         <li v-if="required&&!clearButton"><a @mousedown.prevent="clear() && close()">{{ placeholder || text.notSelected }}</a></li>
-        <li v-for="option in filteredOptions" :id="option[optionsValue]">
+        <li v-for="option in filteredOptions" :id="option[optionsValue]" v-if="option.Hide == null || option.Hide == false" >
           <a @mousedown.prevent="select(option[optionsValue])">
             <span v-html="option[optionsLabel]"></span>
             <span class="glyphicon glyphicon-ok check-mark" v-show="isSelected(option[optionsValue])"></span>
@@ -97,7 +97,7 @@ export default {
     limitText () { return this.text.limit.replace('{{limit}}', this.limit) },
     selected () {
       if (this.list.length === 0) { return '' }
-      var sel = this.values.map(val => (this.list.find(o => o[this.optionsValue] === val) || {})[this.optionsLabel]).filter(val => val !== undefined)
+      var sel = this.values.map(val => (this.list.find(o => o[this.optionsValue] == val) || {})[this.optionsLabel]).filter(val => val !== undefined)
       this.$emit('selected', sel)
       return sel.join(', ')
     },
@@ -197,14 +197,16 @@ export default {
       }
     },
     setOptions (options) {
-      this.list = options.map(el => {
-        if (el instanceof Object) { return el }
-        let obj = {}
-        obj[this.optionsLabel] = el
-        obj[this.optionsValue] = el
-        return obj
-      })
-      this.$emit('options', this.list)
+      if(options != null) {
+        this.list = options.map(el => {
+          if (el instanceof Object) { return el }
+          let obj = {}
+          obj[this.optionsLabel] = el
+          obj[this.optionsValue] = el
+          return obj
+        });
+        this.$emit('options', this.list);
+      }
     },
     toggle () {
       if (this.disabled && !this.show) return;
@@ -230,7 +232,7 @@ export default {
   },
   created () {
     this.setOptions(this.options)
-    this.val = this.value
+    this.val = "" + this.value + "";
     this._select = true
     if (this.val === undefined || !this.parent) { this.val = null }
     if (!this.multiple && this.val instanceof Array) {

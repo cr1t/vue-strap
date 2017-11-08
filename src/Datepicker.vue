@@ -42,8 +42,7 @@
                 :class="{'datepicker-dateRange-item-active':
                   (text.months[parse(val).getMonth()] === m) &&
                   currDate.getFullYear() === parse(val).getFullYear()}"
-                @click="monthSelect(index)"
-              ></span>
+                @click="monthSelect(index)"></span>
             </template>
           </div>
         </div>
@@ -61,8 +60,7 @@
             <template v-for="decade in decadeRange">
               <span :class="{'datepicker-dateRange-item-active':parse(val).getFullYear() === decade.text}"
                 v-text="decade.text"
-                @click.stop="yearSelect(decade.text)"
-              ></span>
+                @click.stop="yearSelect(decade.text)"></span>
             </template>
           </div>
         </div>
@@ -78,14 +76,15 @@ import {translations} from './utils/utils.js'
 export default {
   props: {
     value: {type: String},
-    format: {default: 'MM/dd/yyyy'},
+    format: {default: 'dd MMM yyyy'},
     disabledDaysOfWeek: {type: Array, default () { return [] }},
     width: {type: String},
     clearButton: {type: Boolean, default: false},
     lang: {type: String, default: navigator.language},
     name: {type: String},
     placeholder: {type: String},
-    iconsFont: {type: String, default: 'glyphicon'}
+    iconsFont: {type: String, default: 'glyphicon'},
+    required: {type: Boolean, default: null},
   },
   data () {
     return {
@@ -95,7 +94,8 @@ export default {
       displayDayView: false,
       displayMonthView: false,
       displayYearView: false,
-      val: this.value
+      val: this.value,
+      valid: null
     }
   },
   watch: {
@@ -106,11 +106,17 @@ export default {
       this.val = this.stringify(this.currDate)
     },
     val (val, old) {
-      this.$emit('input', val)
+      this.$emit('input', val);
+      this.valid = this.validate();     
     },
     value (val) {
-      if (this.val !== val) { this.val = val }
-    }
+      if (this.val !== val) { this.val = val }    
+    },
+    valid (val, old) {
+      this.$emit('isvalid', val)
+      this.$emit(!val ? 'invalid' : 'valid')
+      if (this._parent) this._parent.validate();
+    },
   },
   computed: {
     text () {
@@ -127,6 +133,13 @@ export default {
     }
   },
   methods: {
+    validate () {
+      if(this.required){
+        if(this.val === "") return false;
+        return moment(this.val, this.format.toUpperCase()).isValid()
+      }
+      return true;
+    },
     close () {
       this.displayDayView = this.displayMonthView = this.displayYearView = false
     },
@@ -252,10 +265,9 @@ export default {
         return isNaN(date.getFullYear()) ? new Date() : date
       }*/
       if(str !== undefined && str !== "")
-        var d = moment(str, this.format);
+        return new Date(str);
       else
-        var d = moment();
-      return d.toDate();
+        return new Date();
     },
     getDayCount (year, month) {
       const dict = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -329,9 +341,18 @@ export default {
       }
     }
   },
+  created () {
+    let parent = this.$parent
+    while (parent && !parent._formValidator) { parent = parent.$parent }
+    if (parent && parent._formValidator) {
+      parent.children.push(this)
+      this._parent = parent
+    }
+  },
   mounted () {
     this.$emit('child-created', this)
-    this.currDate = this.parse(this.val) || this.parse(new Date())
+    this.currDate = this.parse(this.val) || this.parse(new Date());
+    this.validate();
     this._blur = e => {
       if (!this.$el.contains(e.target))
         this.close()
