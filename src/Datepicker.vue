@@ -76,7 +76,7 @@ import {translations} from './utils/utils.js'
 export default {
   props: {
     value: {type: String},
-    format: {default: 'dd MMM yyyy'},
+    format: {default: 'yyyy.MM.dd'},
     disabledDaysOfWeek: {type: Array, default () { return [] }},
     width: {type: String},
     clearButton: {type: Boolean, default: false},
@@ -411,6 +411,7 @@ input.datepicker-input.with-reset-button {
   line-height: 28px;
   height: 28px;
   border-radius: 4px;
+  color: rgb(125, 125, 125);
 }
 .datepicker-ctrl p {
   width: 65%;
@@ -440,8 +441,9 @@ input.datepicker-input.with-reset-button {
 .datepicker-dateRange-item-active:hover,
 .datepicker-dateRange-item-active {
   background: rgb(50, 118, 177)!important;
-  color: white!important;
+  color: white !important;
 }
+
 .datepicker-monthRange {
   margin-top: 10px
 }

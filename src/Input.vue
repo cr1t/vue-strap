@@ -110,7 +110,10 @@ export default {
     }
   },
   computed: {
-    canValidate () { return !this.disabled && !this.readonly && (this.required || this.regex || this.nativeValidate || this.match !== null) },
+    canValidate () { 
+      return !this.disabled && !this.readonly && this.required; 
+      //return !this.disabled && !this.readonly && (this.required || this.regex || this.nativeValidate || this.match !== null) 
+      },
     errorText () {
       let value = this.value
       let error = [this.error]
@@ -164,7 +167,7 @@ export default {
     },
     valid (val, old) {
       this.$emit('isvalid', val)
-      this.$emit(!val ? 'invalid' : 'valid')
+      this.$emit(val == "" ? 'invalid' : 'valid')
       if (this._parent) this._parent.validate()
     },
     value (val) {
@@ -185,7 +188,7 @@ export default {
         this.valid = true
       } else {
         this._timeout.eval = setTimeout(() => {
-          this.valid = this.validate()
+          this.valid = this.validate();
           this._timeout.eval = null
         }, this.validationDelay)
       }
@@ -205,29 +208,28 @@ export default {
       }
     },
     validate () {
+      
       if (!this.canValidate) { return true }
-      let value  = "";
+      var value = (this.val || '').trim();
+      if (value == "") { return !this.required }
       if(!isNaN(this.val))
       {
         if(this.min !== null && this.val < this.min) return false;
         if(this.max !== null && this.val > this.max) return false;
         return true;
       }
-      else {
-        value = (this.val || '').trim();
-      }
-      if (!value) { return !this.required }
+
       if (this.match !== null) { return this.match === value }
       if (value.length < this.minlength) { return false }
       if (this.nativeValidate && !this.input.checkValidity()) { return false }
       if (this.regex) {
         if (!(this.regex instanceof Function ? this.regex(this.val) : this.regex.test(this.val))) { return false }
       }
-      return true
+      return true;
     },
     reset() {
       this.value = ''
-      this.valid = null
+      this.valid = false;
       if (this._timeout.mask) clearTimeout(this._timeout.mask)
       if (this._timeout.eval) clearTimeout(this._timeout.eval)
     }

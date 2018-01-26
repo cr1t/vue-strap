@@ -232,7 +232,7 @@ export default {
   },
   created () {
     this.setOptions(this.options)
-    this.val = "" + this.value + "";
+    this.val = this.value;
     this._select = true
     if (this.val === undefined || !this.parent) { this.val = null }
     if (!this.multiple && this.val instanceof Array) {
@@ -293,11 +293,30 @@ export default {
   line-height: 34px;
   text-align: center;
 }
+
+.bs-searchbox input  {
+    color: #6b6b6b;
+    background-color: transparent;
+    border: 1px solid #e7e7e7;
+}
+.bs-searchbox input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #999; 
+}
+.bs-searchbox input::-moz-placeholder { /* Firefox 19+ */
+    color: #999; 
+}
+.bs-searchbox input::-ms-input-placeholder { /* IE 10+ */
+    color: #999; 
+}
+.bs-searchbox input::-moz-placeholder { /* Firefox 18- */
+    color: #999; 
+}
+
 .bs-searchbox input:focus,
 .form-control.dropdown-toggle:focus {
   outline: 0;
-  border-color: #66afe9 !important;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
+  /*border-color: #66afe9 !important;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);*/
 }
 .secret {
   border: 0;
@@ -332,7 +351,7 @@ export default {
   bottom: 5px;
 }
 .btn-group-justified .dropdown-toggle>span:not(.close) {
-  width: calc(100% - 18px);
+  width: calc(100% - 25px);
   display: inline-block;
   overflow: hidden;
   white-space: nowrap;

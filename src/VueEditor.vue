@@ -1,6 +1,6 @@
 <template>
     <div >
-     <vue-editor v-model="val"></vue-editor>
+     <vue-editor :id="id" v-model="val"></vue-editor>
    </div>
 </template>
 <script>
@@ -8,25 +8,43 @@
 
    export default {
 
-   components: {
-      VueEditor
-    },
-    data() {
-       var val = this.value;
-        return {
-            val
-        }
-    },
-    props: {
-        value: {type: String, default: ''}
-    },
-    watch: {
-        value (val) {
-            if (this.val !== val) { this.val = val }
+    components: {
+        VueEditor
         },
-        val (val, old) {
-            this.$emit('input', val)
+        data() {
+            var val = this.value;
+            return {
+                val,
+                valid: null
+            }
+        },
+        props: {
+            id:'',
+            value: { type: String, default: '' },
+            required: { type: Boolean, default: null },
+        },
+        methods: {
+            validate () {
+                if(this.required){
+                    if(this.val.replace(/<.+?>/g, '') === "") 
+                        return false;
+                }
+                return true;
+            }
+        },
+        watch: {
+            value (val) {
+                if (this.val !== val) { this.val = val }
+            },
+            val (val, old) {
+                this.$emit('input', val);
+                this.valid = this.validate();   
+            },
+            valid (val, old) {
+                this.$emit('isvalid', val)
+                this.$emit(!val ? 'invalid' : 'valid')
+                if (this._parent) this._parent.validate();
+            }
         }
-   }
-}
+    }
  </script>
